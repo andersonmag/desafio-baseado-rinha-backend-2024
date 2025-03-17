@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -26,8 +28,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.github.andersonmag.backendjava.utils.BuilderTestUtils.getClienteTest;
+import static com.github.andersonmag.backendjava.utils.BuilderTestUtils.getTransacoesExtratoClienteTest;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +69,7 @@ public class ClienteControllerTest {
 
     @Test
     public void deveRetornarStatus422AoConterSaldoInconsistente() throws Exception {
-        final Cliente cliente = getCliente(10L, 0L);
+        final Cliente cliente = getClienteTest(ID_CLIENTE, 10L, 0L);
         BDDMockito.given(clienteRepository.findById(ID_CLIENTE)).willReturn(Optional.of(cliente));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -86,7 +92,7 @@ public class ClienteControllerTest {
 
     @Test
     public void deveRetornarStatus200Sucesso() throws Exception {
-        final Cliente cliente = getCliente(1000L, 0L);
+        final Cliente cliente = getClienteTest(ID_CLIENTE, 1000L, 0L);
         BDDMockito.given(clienteRepository.findById(ID_CLIENTE)).willReturn(Optional.of(cliente));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -99,6 +105,24 @@ public class ClienteControllerTest {
                 .andExpect(jsonPath("$.saldo").value(cliente.getSaldoAtual()));
     }
 
+    @Test
+    public void deveRetornarExtratoStatus200Sucesso() throws Exception {
+        final Cliente cliente = getClienteTest(ID_CLIENTE, 1000L, 0L);
+        BDDMockito.given(clienteRepository.findById(ID_CLIENTE)).willReturn(Optional.of(cliente));
+        BDDMockito.given(transacaoRepository.findAllByCliente(any(Pageable.class), eq(ID_CLIENTE)))
+                .willReturn(new PageImpl<>(getTransacoesExtratoClienteTest(cliente)));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(BASE_URL.concat("/extrato"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.limite").value(1000L))
+                .andExpect(jsonPath("$.total").value(cliente.getSaldoAtual()))
+                .andExpect(jsonPath("$.data_extrato").exists())
+                .andExpect(jsonPath("$.ultimas_transacoes", hasSize(10)));
+    }
+
     private String getTransacaoRequest(String valor, String descricao, String tipo) throws JsonProcessingException {
         Map<String, Object> valores = new HashMap<>();
         valores.put("valor", valor);
@@ -106,9 +130,5 @@ public class ClienteControllerTest {
         valores.put("tipo", tipo);
 
         return new ObjectMapper().writeValueAsString(valores);
-    }
-
-    private Cliente getCliente(long limite, long saldoAtual) {
-        return new Cliente(1L, "Cliente 1", limite, saldoAtual);
     }
 }

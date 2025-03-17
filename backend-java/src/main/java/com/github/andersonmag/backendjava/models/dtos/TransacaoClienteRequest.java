@@ -1,5 +1,6 @@
 package com.github.andersonmag.backendjava.models.dtos;
 
+import com.github.andersonmag.backendjava.models.entities.Cliente;
 import com.github.andersonmag.backendjava.models.entities.Transacao;
 import com.github.andersonmag.backendjava.models.enums.TipoTransacao;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ public record TransacaoClienteRequest(@NotNull(message = "É obrigátorio.")
 									  String descricao)
 {
 
-	public Transacao toModel() {
-		return new Transacao(Long.valueOf(this.valor), TipoTransacao.fromString(this.tipo), descricao);
+	public Transacao toModel(Cliente cliente) {
+		return new Transacao(Long.valueOf(this.valor), TipoTransacao.fromString(this.tipo), descricao, cliente);
 	}
 }
