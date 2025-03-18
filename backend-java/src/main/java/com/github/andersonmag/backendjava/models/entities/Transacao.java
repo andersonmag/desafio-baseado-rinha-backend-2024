@@ -1,6 +1,7 @@
 package com.github.andersonmag.backendjava.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.andersonmag.backendjava.config.TipoTransacaoConverter;
 import com.github.andersonmag.backendjava.models.enums.TipoTransacao;
 import jakarta.persistence.*;
 
@@ -18,7 +19,7 @@ public class Transacao {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
     private Long valor;
-    @Enumerated(EnumType.STRING) // <- IMPORTANTE: Salva como texto ('r' ou 'd')
+    @Convert(converter = TipoTransacaoConverter.class)
     private TipoTransacao tipo;
     private String descricao;
     private LocalDateTime realizadaEm;

@@ -33,7 +33,7 @@ public class TransacaoService {
         final Cliente cliente = getClientePorId(idCliente);
         final Long valor = Long.valueOf(request.valor());
         final Long novoSaldo = (
-                Objects.equals(TipoTransacao.DEBITO, TipoTransacao.fromString(request.tipo())) ?
+                Objects.equals(TipoTransacao.DEBITO, TipoTransacao.of(request.tipo())) ?
                         cliente.getSaldoAtual() - valor :
                         cliente.getSaldoAtual() + valor
         );

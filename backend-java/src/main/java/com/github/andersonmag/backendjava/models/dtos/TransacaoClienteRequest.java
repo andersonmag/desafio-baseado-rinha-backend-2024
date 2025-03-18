@@ -19,6 +19,6 @@ public record TransacaoClienteRequest(@NotNull(message = "É obrigátorio.")
 {
 
 	public Transacao toModel(Cliente cliente) {
-		return new Transacao(Long.valueOf(this.valor), TipoTransacao.fromString(this.tipo), descricao, cliente);
+		return new Transacao(Long.valueOf(this.valor), TipoTransacao.of(this.tipo), descricao, cliente);
 	}
 }

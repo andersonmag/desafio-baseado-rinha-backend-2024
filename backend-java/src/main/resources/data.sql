@@ -17,12 +17,11 @@ VALUES ('padaria joia de cocaia', 100000 * 100);
 INSERT INTO clientes (nome, limite)
 VALUES ('kid mais', 5000 * 100);
 
-CREATE TYPE tipo_transacao AS ENUM ('r', 'd');
 CREATE TABLE IF NOT EXISTS transacoes
 (
     id           SERIAL PRIMARY KEY,
     cliente_id INTEGER REFERENCES clientes(id) NOT NULL,
-    tipo         tipo_transacao DEFAULT 'r' NOT NULL,
+    tipo         varchar(1) NOT NULL,
     descricao    varchar(10)    NOT NULL,
     realizada_em timestamp DEFAULT CURRENT_TIMESTAMP,
     valor        DECIMAL(10, 2) NOT NULL

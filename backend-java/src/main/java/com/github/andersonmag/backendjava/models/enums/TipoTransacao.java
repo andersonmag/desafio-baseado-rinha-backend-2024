@@ -3,30 +3,32 @@ package com.github.andersonmag.backendjava.models.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 public enum TipoTransacao {
-	RECEBIVEIS("r"), DEBITO("d");
-	private String tipo;
+    RECEBIVEIS("r"), DEBITO("d");
+    private String tipo;
 
-	@JsonCreator
-	TipoTransacao(String tipo) {
-		this.tipo = tipo;
-	}
+    @JsonCreator
+    TipoTransacao(String tipo) {
+        this.tipo = tipo;
+    }
 
-	public static TipoTransacao fromString(String tipo) {
-		if (tipo == null) {
-			return null;
-		}
+    public static TipoTransacao of(String tipo) {
+        return Stream.of(TipoTransacao.values())
+                .filter(t -> Objects.equals(t.getTipo(), tipo))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Tipo de transação inválido: " + tipo));
+    }
 
-		for (TipoTransacao tipoTransacao : TipoTransacao.values()) {
-			if (tipoTransacao.getTipo().equalsIgnoreCase(tipo)) {
-				return tipoTransacao;
-			}
-		}
-		throw new IllegalArgumentException("Tipo de transação inválido: " + tipo);
-	}
+    @Override
+    public String toString() {
+        return tipo;
+    }
 
-	@JsonValue
-	public String getTipo() {
-		return tipo;
-	}
+    @JsonValue
+    public String getTipo() {
+        return tipo;
+    }
 }
