@@ -1,8 +1,4 @@
-export interface Cliente {
-    id: number;
-    nome: string;
-    limite: number;
-}
+import {Cliente} from "./cliente.ts";
 
 export const clientes: Cliente[] = [
     { id: 1, nome: "o barato sai caro", limite: 1000 * 100},
