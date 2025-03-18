@@ -86,12 +86,12 @@ public class TransacaoServiceTest {
         final Cliente cliente = getClienteTest(ID_CLIENTE, 1000L, 2L);
         when(clienteRepository.findById(ID_CLIENTE)).thenReturn(Optional.of(cliente));
         final List<Transacao> transacoes = getTransacoesExtratoClienteTest(cliente);
-        when(transacaoRepository.findAllByCliente(any(Pageable.class), eq(ID_CLIENTE))).thenReturn(new PageImpl<>(transacoes));
+        when(transacaoRepository.findAllByClienteId(any(Pageable.class), eq(ID_CLIENTE))).thenReturn(new PageImpl<>(transacoes));
 
         final ExtratoClienteResponse response = service.getExtratoCliente(ID_CLIENTE);
 
-        Assertions.assertEquals(cliente.getLimite(), response.limite());
-        Assertions.assertEquals(cliente.getSaldoAtual(), response.total());
+        Assertions.assertEquals(cliente.getLimite(), response.saldo().limite());
+        Assertions.assertEquals(cliente.getSaldoAtual(), response.saldo().total());
         Assertions.assertEquals(10, response.ultimasTransacoes().size());
     }
 }

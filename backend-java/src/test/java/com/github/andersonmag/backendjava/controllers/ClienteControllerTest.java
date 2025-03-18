@@ -109,7 +109,7 @@ public class ClienteControllerTest {
     public void deveRetornarExtratoStatus200Sucesso() throws Exception {
         final Cliente cliente = getClienteTest(ID_CLIENTE, 1000L, 0L);
         BDDMockito.given(clienteRepository.findById(ID_CLIENTE)).willReturn(Optional.of(cliente));
-        BDDMockito.given(transacaoRepository.findAllByCliente(any(Pageable.class), eq(ID_CLIENTE)))
+        BDDMockito.given(transacaoRepository.findAllByClienteId(any(Pageable.class), eq(ID_CLIENTE)))
                 .willReturn(new PageImpl<>(getTransacoesExtratoClienteTest(cliente)));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -117,9 +117,9 @@ public class ClienteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.limite").value(1000L))
-                .andExpect(jsonPath("$.total").value(cliente.getSaldoAtual()))
-                .andExpect(jsonPath("$.data_extrato").exists())
+                .andExpect(jsonPath("$.saldo.limite").value(1000L))
+                .andExpect(jsonPath("$.saldo.total").value(cliente.getSaldoAtual()))
+                .andExpect(jsonPath("$.saldo.data_extrato").exists())
                 .andExpect(jsonPath("$.ultimas_transacoes", hasSize(10)));
     }
 

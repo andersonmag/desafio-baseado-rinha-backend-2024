@@ -2,6 +2,7 @@ package com.github.andersonmag.backendjava.services;
 
 import com.github.andersonmag.backendjava.exceptions.RegistroNaoEncontradoException;
 import com.github.andersonmag.backendjava.models.dtos.ExtratoClienteResponse;
+import com.github.andersonmag.backendjava.models.dtos.TotalSaldoExtratoClienteResponse;
 import com.github.andersonmag.backendjava.models.dtos.TransacaoClienteRequest;
 import com.github.andersonmag.backendjava.models.dtos.TransacaoClienteResponse;
 import com.github.andersonmag.backendjava.models.entities.Cliente;
@@ -51,12 +52,13 @@ public class TransacaoService {
 
     public ExtratoClienteResponse getExtratoCliente(Long idCliente) {
         final Cliente cliente = getClientePorId(idCliente);
-        final Pageable paginacao = PageRequest.of(0, 10, Sort.by("realizada_em").descending());
-        Page<Transacao> transacoesClientePaginado = transacaoRepository.findAllByCliente(paginacao, idCliente);
+        final Pageable paginacao = PageRequest.of(0, 10, Sort.by("realizadaEm").descending());
+        Page<Transacao> transacoesClientePaginado = transacaoRepository.findAllByClienteId(paginacao, idCliente);
 
-        return new ExtratoClienteResponse(
-                cliente.getSaldoAtual(), LocalDateTime.now(), cliente.getLimite(), transacoesClientePaginado.getContent()
+        final TotalSaldoExtratoClienteResponse totalSaldo = new TotalSaldoExtratoClienteResponse(
+                cliente.getSaldoAtual(), LocalDateTime.now(), cliente.getLimite()
         );
+        return new ExtratoClienteResponse(totalSaldo, transacoesClientePaginado.getContent());
     }
 
     private Cliente getClientePorId(Long idCliente) {

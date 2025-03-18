@@ -1,6 +1,8 @@
 package com.github.andersonmag.backendjava.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.github.andersonmag.backendjava.config.TipoTransacaoConverter;
 import com.github.andersonmag.backendjava.models.enums.TipoTransacao;
 import jakarta.persistence.*;
@@ -8,6 +10,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity(name = "transacoes")
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Transacao {
 
     @Id

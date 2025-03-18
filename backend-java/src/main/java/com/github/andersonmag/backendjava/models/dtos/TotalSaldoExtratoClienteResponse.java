@@ -2,11 +2,9 @@ package com.github.andersonmag.backendjava.models.dtos;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.github.andersonmag.backendjava.models.entities.Transacao;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record ExtratoClienteResponse(TotalSaldoExtratoClienteResponse saldo,
-                                     List<Transacao> ultimasTransacoes) {
+public record TotalSaldoExtratoClienteResponse(Long total, LocalDateTime dataExtrato, Long limite) {
 }

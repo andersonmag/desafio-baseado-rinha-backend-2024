@@ -22,11 +22,6 @@ public enum TipoTransacao {
                 .orElseThrow(() -> new IllegalArgumentException("Tipo de transação inválido: " + tipo));
     }
 
-    @Override
-    public String toString() {
-        return tipo;
-    }
-
     @JsonValue
     public String getTipo() {
         return tipo;
