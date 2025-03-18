@@ -1,8 +1,9 @@
 import * as React from "react";
 import {useState} from "react";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
-import {clientes} from "../../data/clientes.ts";
+import {clientes} from "../../data/data.ts";
 import {realizarTransacao} from "../../services/ClienteService";
+import {Cliente} from "../../data/cliente.ts";
 
 export const Transacao = () => {
     const [formData, setFormData] = useState({
@@ -10,12 +11,14 @@ export const Transacao = () => {
         tipo: "r",
         valor: "",
     });
-    const [clienteId, setClienteId] = useState<number>(null);
+    const [cliente, setCliente] = useState<Cliente>(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await realizarTransacao(clienteId, formData);
+            const response = await realizarTransacao(cliente.id, formData);
+            localStorage.removeItem("cliente");
+            localStorage.setItem("cliente", JSON.stringify(cliente));
             alert(`Saldo atualizado: ${response.data.saldo} \nAcesse a página de Extrato para ver detalhes.`);
         } catch (error) {
             alert(`${error.response.data.mensagem} \n\n ${error.response.data.campos ? JSON.stringify(error.response.data.campos) : ''}`);
@@ -65,9 +68,10 @@ export const Transacao = () => {
                 <FormControl>
                     <InputLabel>Cliente</InputLabel>
                     <Select
-                        value={clienteId}
+                        value={cliente?.id}
                         onChange={(ev) => {
-                            setClienteId(ev.target.value as number)
+                            const clienteSelecionado = clientes.find(cliente => cliente.id === ev.target.value as number);
+                            setCliente(clienteSelecionado ?? null);
                         }}
                         required
                         variant="filled"
