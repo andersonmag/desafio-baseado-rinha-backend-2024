@@ -1,14 +1,14 @@
-server:
-  servlet:
-    context-path: /api
 spring:
   application:
     name: backend-java
   datasource:
-    url: jdbc:postgresql://localhost:5432/rinha-backend
-    username: postgres
-    password:
+    url: jdbc:postgresql://db:5432/rinha
+    username: admin
+    password: 123
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      connection-timeout: 30000
   jpa:
     hibernate:
       ddl-auto: none

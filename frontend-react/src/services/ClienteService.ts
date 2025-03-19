@@ -1,6 +1,6 @@
 import axios, {AxiosRequestConfig} from "axios";
 
-const API_URL = "http://localhost:8080/api/clientes";
+const API_URL = "http://localhost:9999/clientes";
 
 export async function realizarTransacao(idCliente: number, dados: any): Promise<any> {
     return await axios.post(`${API_URL}/${idCliente}/transacoes`, dados, {
