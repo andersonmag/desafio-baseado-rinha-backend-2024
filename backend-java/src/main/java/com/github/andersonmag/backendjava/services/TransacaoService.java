@@ -15,9 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Service
 public class TransacaoService {
@@ -30,33 +30,36 @@ public class TransacaoService {
         this.transacaoRepository = transacaoRepository;
     }
 
+    @Transactional
     public TransacaoClienteResponse realizarTransacao(Long idCliente, TransacaoClienteRequest request) {
         final Cliente cliente = getClientePorId(idCliente);
         final Long valor = Long.valueOf(request.valor());
         final Long novoSaldo = (
-                Objects.equals(TipoTransacao.DEBITO, TipoTransacao.of(request.tipo())) ?
-                        cliente.getSaldoAtual() - valor :
-                        cliente.getSaldoAtual() + valor
+            TipoTransacao.DEBITO == TipoTransacao.of(request.tipo()) ?
+                    cliente.getSaldoAtual() - valor :
+                    cliente.getSaldoAtual() + valor
         );
 
-        if (novoSaldo < (cliente.getLimite() * -1)) {
+        final long limiteNegativo = -cliente.getLimite();
+        if (novoSaldo < limiteNegativo) {
             throw new IllegalArgumentException("Saldo inconsistente");
         }
 
         cliente.setSaldoAtual(novoSaldo);
-        clienteRepository.save(cliente);
         transacaoRepository.save(request.toModel(cliente));
+        clienteRepository.save(cliente);
 
         return new TransacaoClienteResponse(cliente.getLimite(), novoSaldo);
     }
 
+    @Transactional(readOnly = true)
     public ExtratoClienteResponse getExtratoCliente(Long idCliente) {
         final Cliente cliente = getClientePorId(idCliente);
         final Pageable paginacao = PageRequest.of(0, 10, Sort.by("realizadaEm").descending());
         Page<Transacao> transacoesClientePaginado = transacaoRepository.findAllByClienteId(paginacao, idCliente);
 
         final TotalSaldoExtratoClienteResponse totalSaldo = new TotalSaldoExtratoClienteResponse(
-                cliente.getSaldoAtual(), LocalDateTime.now(), cliente.getLimite()
+            cliente.getSaldoAtual(), LocalDateTime.now(), cliente.getLimite()
         );
         return new ExtratoClienteResponse(totalSaldo, transacoesClientePaginado.getContent());
     }
