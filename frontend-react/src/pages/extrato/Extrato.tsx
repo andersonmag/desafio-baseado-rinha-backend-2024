@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import {getExtratoCliente} from "../../services/ClienteService.ts";
@@ -22,12 +21,12 @@ const Extrato = () => {
         saldo: {total: 0, limite: 0},
         ultimas_transacoes: []
     });
-    const [cliente, setCliente] = useState<Cliente>(null);
+    const [cliente, setCliente] = useState<Cliente | null>(null);
 
     useEffect(() => {
-        const storedCliente = localStorage.getItem('cliente');
-        if (storedCliente) {
-            setCliente(JSON.parse(storedCliente));
+        const clienteStorage = localStorage.getItem('cliente');
+        if (clienteStorage) {
+            setCliente(JSON.parse(clienteStorage));
         }
 
         const handleStorageChange = async () => {
@@ -47,8 +46,7 @@ const Extrato = () => {
         };
     }, []);
 
-
-    const buscarExtrato = async (idCliente) => {
+    const buscarExtrato = async (idCliente: number) => {
         const response = await getExtratoCliente(idCliente);
         setExtrato(response.data);
     }
@@ -62,8 +60,8 @@ const Extrato = () => {
                 <h1 style={{textAlign: 'center'}}>Extrato</h1>
 
                 <b><h3>{cliente?.id} - {cliente?.nome}</h3></b>
-                <span>Saldo total: R$ {extrato.saldo.total}</span>
-                <span>Limite: R$ {extrato.saldo.limite}</span>
+                <span>Saldo total: {extrato.saldo.total}</span>
+                <span>Limite: {extrato.saldo.limite}</span>
 
                 <p>Últimas 10 transações do cliente, ordenadas por data em ordem decrescente:</p>
 
@@ -83,7 +81,7 @@ const Extrato = () => {
                                     <TableCell>{transacao.realizada_em}</TableCell>
                                     <TableCell>{transacao.descricao}</TableCell>
                                     <TableCell>{transacao.tipo === "r" ? "Recebíveis" : "Débito"}</TableCell>
-                                    <TableCell>R$ {transacao.valor}</TableCell>
+                                    <TableCell>{transacao.valor}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

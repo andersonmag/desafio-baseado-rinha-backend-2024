@@ -1,4 +1,3 @@
-import * as React from "react";
 import {useState} from "react";
 import {Box, Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {clientes} from "../../data/data.ts";
@@ -11,21 +10,22 @@ export const Transacao = () => {
         tipo: "r",
         valor: "",
     });
-    const [cliente, setCliente] = useState<Cliente>(null);
+    const [cliente, setCliente] = useState<Cliente | null>(null);
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
         try {
-            const response = await realizarTransacao(cliente.id, formData);
+            const response = await realizarTransacao(cliente?.id as number, formData);
             localStorage.removeItem("cliente");
             localStorage.setItem("cliente", JSON.stringify(cliente));
             alert(`Saldo atualizado: ${response.data.saldo} \nAcesse a página de Extrato para ver detalhes.`);
-        } catch (error) {
-            alert(`${error.response.data.mensagem} \n\n ${error.response.data.campos ? JSON.stringify(error.response.data.campos) : ''}`);
+        } catch (error: any) {
+            alert(`${error.response.data.mensagem} \n\n ${error.response.data.campos ? 
+                JSON.stringify(error.response.data.campos) : ''}`);
         }
     }
 
-    const handleChange = (event) => {
+    const handleChange = (event: any) => {
         const {name, value} = event.target;
         setFormData((prev) => ({...prev, [name as string]: value}));
     };
@@ -68,14 +68,15 @@ export const Transacao = () => {
                 <FormControl>
                     <InputLabel>Cliente</InputLabel>
                     <Select
-                        value={cliente?.id}
+                        value={cliente?.id ?? ""}
                         onChange={(ev) => {
                             const clienteSelecionado = clientes.find(cliente => cliente.id === ev.target.value as number);
-                            setCliente(clienteSelecionado ?? null);
+                            if (clienteSelecionado) {
+                                setCliente(clienteSelecionado);
+                            }
                         }}
                         required
-                        variant="filled"
-                    >
+                        variant="filled">
                         {clientes.map((cliente) => (
                             <MenuItem key={cliente.id} value={cliente.id}>
                                 {cliente.id} - {cliente.nome}
