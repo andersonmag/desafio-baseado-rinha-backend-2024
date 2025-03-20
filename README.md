@@ -1,5 +1,5 @@
 # Desafio baseado na Rinha Backend 2024
-## Tecnologias utilizadas:
+## Tecnologias utilizadas
 - Spring(Java 17)
 - React 18
 - PostgreSQL
